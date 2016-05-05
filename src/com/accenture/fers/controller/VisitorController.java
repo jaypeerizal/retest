@@ -34,10 +34,12 @@ public class VisitorController {
 	@Autowired
 	EventFacade eventServiceImpl;
 
-	private static Logger log = Logger.getLogger(VisitorController.class);
+	private static final Logger LOGGER = Logger.getLogger(VisitorController.class);
+
 
 	/**
-	 *
+	 * This method is invoked when user clicks on "Register" button in "registration.jsp".
+	 * It takes input parameter from the request and register a new visitor into the FERS application.
 	 * @param request
 	 * @param response
 	 * @return
@@ -45,51 +47,52 @@ public class VisitorController {
 	 *             method will register new Visitor into FERS system by
 	 *             accepting registration details and load into database
 	 */
-	@RequestMapping("/newVistor.htm")
+
+	@RequestMapping("/newVistor.htm") //@RequestMapping annotation is used to map any URL to the method of controller class.
 	public ModelAndView newVisitor(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		if (request == null || response == null) {
-			log.info("Request or Response failed for NEWVISITOR METHOD..");
+
+		/*Using if loop check the value of the request parameter.
+		 *If request or response is null, log a message and throw FERSGenericException.
+		 */
+		 if (request == null || response == null) {
+			 LOGGER.info("Request or Response failed for NEWVISITOR METHOD..");
 			throw new FERSGenericException(
 					"Error in Transaction, Please re-Try. for more information check Logfile in C:\\FERSLOG folder",
 					new NullPointerException());
 		}
-		String username = request.getParameter("USERNAME");
-		String password = request.getParameter("PASSWORD");
-		String firstname = request.getParameter("FIRSTNAME");
-		String lastname = request.getParameter("LASTNAME");
-		String email = request.getParameter("EMAIL");
-		String phoneno = request.getParameter("PHONENO");
-		String address = request.getParameter("ADDRESS");
+		//TODO 1. Create a string variable 'username' and initialize it with request parameter 'USERNAME'.
+		 //Hint: Get the value of request parameter 'USERNAME'  using getParameter() method.
+		//TODO 2. Create a string variable 'password' and initialize it with request parameter 'PASSWORD'.
+		//TODO 3. Create a string variable 'firstname' and initialize it with request parameter 'FIRSTNAME'.
+		//TODO 4. Create a string variable 'lastname' and initialize it with request parameter 'LASTNAME'.
+		//TODO 5. Create a string variable 'email' and initialize it with request parameter 'EMAIL'.
+		//TODO 6. Create a string variable 'phoneno' and initialize it with request parameter 'PHONENO'.
+		//TODO 7. Create a string variable 'address' and initialize it with request parameter 'ADDRESS'.
+		 LOGGER.info("Creating new visitor with UserName :" + request.getParameter("USERNAME"));
+		//TODO 8. Create an instance of Visitor entity object 'visitor'.
+		//TODO 9. set the value of the visitor object's attribute username using the string value 'username'.
+		//Hint: Use visitor.setUserName() method to set the value of the attribute user name.
+		//TODO 10. Set the value of the visitor object's attribute 'password' using the string value 'password'.
+		//TODO 11. Set the value of the visitor object's attribute 'firstName' using the string value 'firstname'.
+		//TODO 12. Set the value of the visitor object's attribute 'lastName' using the string value 'lastname'.
+		//TODO 13. Set the value of the visitor object's attribute 'email' using the string value 'email'.
+		//TODO 14. Set the value of the visitor object's attribute 'phoneNumber' using the string value 'phoneno'.
+		//TODO 15. Set the value of the visitor object's attribute 'phoneNumber' using the string value 'firstname'.
+		//TODO 16. Invoke createVisitor() method of visitorServiceImpl class and pass visitor object set in above steps as an argument and save its return value in a boolean variable 'insertStatus'.
 
-		log.info("creating new visitor with UserName :" + username);
-
-		Visitor visitor = new Visitor();
-		visitor.setUserName(username);
-		visitor.setPassword(password);
-		visitor.setFirstName(firstname);
-		visitor.setLastName(lastname);
-		visitor.setEmail(email);
-		visitor.setPhoneNumber(phoneno);
-		visitor.setAddress(address);
-
-		boolean insertStatus = visitorServiceImpl.createVisitor(visitor);
-
+		//Create an instance of ModelAndView class, 'mv'.
 		ModelAndView mv = new ModelAndView();
-		if (insertStatus == true) {
-			mv.addObject("REGISTRATIONSTATUSMESSAGE",
-					"User Registered Succesfully !!!");
-			log.info("Succesfully created visitor " + username);
-			mv.setViewName("/registration.jsp");
-		} else {
-			mv.addObject("REGISTRATIONSTATUSMESSAGE",
-					"USERNAME already exists.. please register again with different USERNAME..");
-			log.info("Username " + username
-					+ " already exists and visitor creation failed..");
-			mv.setViewName("/registration.jsp");
-		}
+		//TODO 17. Use if...else loop to check the value of 'insertStatus'.
+		//TODO 17.a If 'insertStatus' is true, add an object attribute to the model with the attribute name 'REGISTRATIONSTATUSMESSAGE'
+		// and value "User Registered Succesfully !!!".
+		//TODO 17.b Else add an object attribute to the model with the attribute name 'REGISTRATIONSTATUSMESSAGE'
+		// and value "USERNAME already exists.Please register again with different USERNAME!!!" in else block.
+
+		mv.setViewName("/registration.jsp");
 		return mv;
 	}
+
 
 	/**
 	 *
@@ -108,7 +111,7 @@ public class VisitorController {
 	public ModelAndView searchVisitor(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		if (request == null || response == null) {
-			log.info("Request or Response failed for SEARCHVISITOR METHOD..");
+			LOGGER.info("Request or Response failed for SEARCHVISITOR METHOD..");
 			throw new FERSGenericException(
 					"Error in Transaction, Please re-Try. for more information check Logfile in C:\\FERSLOG folder",
 					new NullPointerException());
@@ -124,7 +127,7 @@ public class VisitorController {
 			password = hs.getAttribute("PASSWORD").toString();
 		}
 
-		log.info("Logging into FERS using username :" + username
+		LOGGER.info("Logging into FERS using username :" + username
 				+ " and password :" + password);
 
 		Visitor visitor = new Visitor();
@@ -132,9 +135,8 @@ public class VisitorController {
 
 		try{
 		visitor = visitorServiceImpl.searchVisitor(username, password);
-		}
-		catch(NoResultException exception){
-			log.error("Invalid Login");
+		}catch(NoResultException exception){
+			LOGGER.error("Invalid Login",exception);
 			mv.addObject("ERROR", "Invalid Username / Password.");
 			mv.setViewName("/index.jsp");
 			return mv;
@@ -147,17 +149,17 @@ public class VisitorController {
 			return mv;
 		} else {
 
-			log.info("Visitor details available for the username :" + username);
+			LOGGER.info("Visitor details available for the username :" + username);
 
 			List<Event> eventList = new ArrayList<Event>();
 			eventList = eventServiceImpl.getAllEvents();
 
-			log.info("All events listed for th visitor :" + eventList);
+			LOGGER.info("All events listed for th visitor :" + eventList);
 
 			List<Object[]> regList = new ArrayList<Object[]>();
 			regList = visitorServiceImpl.showRegisteredEvents(visitor);
 
-			log.info("All Registered events listed for the visitor :" + regList);
+			LOGGER.info("All Registered events listed for the visitor :" + regList);
 
 			HttpSession session = request.getSession();
 			session.setAttribute("VISITOR", visitor);
@@ -188,23 +190,22 @@ public class VisitorController {
 			HttpServletResponse response) throws Exception {
 
 		boolean value=false;
-		if (request == null || response == null) {log.info("Request or Response failed for SEARCHVISITOR METHOD..");
+		if (request == null || response == null) {
+			LOGGER.info("Request or Response failed for SEARCHVISITOR METHOD..");
 			throw new FERSGenericException(
 					"Error in Transaction, Please re-Try. for more information check Logfile in C:\\FERSLOG folder",
 					new NullPointerException());
 		}
 		String username = request.getParameter("userName");
-				try{
+		try{
 		 value = visitorServiceImpl.searchVisitor(username);
-		}
-		catch(NoResultException exception){
-			log.error("Invalid Login");
+		}catch(NoResultException exception){
+			LOGGER.error("Invalid Login",exception);
 
 		}
    if(value){
 			response.getWriter().print("success");
-   }
-   else{
+   } else{
 		response.getWriter().print("fail");
 
    }
@@ -227,7 +228,7 @@ public class VisitorController {
 			HttpServletResponse response) throws Exception {
 
 		if (request == null || response == null) {
-			log.info("Request or Response failed for REGISTERVISITOR METHOD..");
+			LOGGER.info("Request or Response failed for REGISTERVISITOR METHOD..");
 			throw new FERSGenericException(
 					"Error in Transaction, Please re-Try. for more information check Logfile in C:\\FERSLOG folder",
 					new NullPointerException());
@@ -237,18 +238,18 @@ public class VisitorController {
 		Visitor visitor = (Visitor) session.getAttribute("VISITOR");
 		int eventid = Integer.parseInt(request.getParameter("eventId"));
 
-		log.info("Visitor registered for the event :" + eventid);
+		LOGGER.info("Visitor registered for the event :" + eventid);
 
 		ModelAndView mv = new ModelAndView();
 
 		boolean regStatus = eventServiceImpl.checkEventsofVisitor(visitor,
 				eventid);
 
-		log.info("Status of the visitor for the event :" + regStatus);
+		LOGGER.info("Status of the visitor for the event :" + regStatus);
 
 		if (regStatus == false) {
 			visitorServiceImpl.registerVisitor(visitor, eventid);
-			log.info("Visitor succesfully registed for event :" + eventid);
+			LOGGER.info("Visitor succesfully registed for event :" + eventid);
 		} else {
 			mv.addObject("RegError", "User already Registered for the EVENT !!");
 		}
@@ -285,7 +286,7 @@ public class VisitorController {
 			HttpServletResponse response) throws Exception {
 
 		if (request == null || response == null) {
-			log.info("Request or Response failed for UPDATEVISITOR METHOD..");
+			LOGGER.info("Request or Response failed for UPDATEVISITOR METHOD..");
 			throw new FERSGenericException(
 					"Error in Transaction, Please re-Try. for more information check Logfile in C:\\FERSLOG folder",
 					new NullPointerException());
@@ -294,11 +295,10 @@ public class VisitorController {
 		HttpSession session = request.getSession();
 		Visitor visitor = (Visitor) session.getAttribute("VISITOR");
 
-		log.info("Updating visitor details with VisitorID :"
+		LOGGER.info("Updating visitor details with VisitorID :"
 				+ visitor.getVisitorId());
 
 		String username = request.getParameter("username");
-		// String password=request.getParameter("password");
 		String firstname = request.getParameter("firstname");
 		String lastname = request.getParameter("lastname");
 		String email = request.getParameter("email");
@@ -308,14 +308,13 @@ public class VisitorController {
 		visitor.setFirstName(firstname);
 		visitor.setLastName(lastname);
 		visitor.setUserName(username);
-		// visitor.setPassword(password);
 		visitor.setEmail(email);
 		visitor.setPhoneNumber(phoneno);
 		visitor.setAddress(place);
 
 		int status = visitorServiceImpl.updateVisitorDetails(visitor);
 
-		log.info("Number of Visitor records updated is :" + status);
+		LOGGER.info("Number of Visitor records updated is :" + status);
 
 		ModelAndView mv = new ModelAndView();
 
@@ -339,7 +338,7 @@ public class VisitorController {
 		Visitor visitor = (Visitor) session.getAttribute("VISITOR");
 
 		if (visitor != null) {
-			log.info("Changing visitor password with VisitorID :"
+			LOGGER.info("Changing visitor password with VisitorID :"
 					+ visitor.getVisitorId());
 
 			String password = request.getParameter("password");
@@ -351,15 +350,15 @@ public class VisitorController {
 					status = visitorServiceImpl.changePassword(visitor);
 				} catch (FERSGenericException e) {
 					status = -5;
-					log.error(e.getMessage(), e);
+					LOGGER.error(e.getMessage(), e);
 				}
 			} else {
-				log.error("Password cannot be blank");
+				LOGGER.error("Password cannot be blank");
 			}
 
-			log.info("Visitor password changed :" + status);
+			LOGGER.info("Visitor password changed :" + status);
 		} else {
-			log.error("Visitor details are invalid");
+			LOGGER.error("Visitor details are invalid");
 		}
 
 		ModelAndView mv = new ModelAndView();
@@ -404,7 +403,7 @@ public class VisitorController {
 			HttpServletResponse response) throws Exception {
 
 		if (request == null || response == null) {
-			log.info("Request or Response failed for UNREGISTEREVENT METHOD..");
+			LOGGER.info("Request or Response failed for UNREGISTEREVENT METHOD..");
 			throw new FERSGenericException(
 					"Error in Transaction, Please re-Try. for more information check Logfile in C:\\FERSLOG folder",
 					new NullPointerException());
@@ -414,7 +413,7 @@ public class VisitorController {
 		Visitor visitor = (Visitor) session.getAttribute("VISITOR");
 		int eventid = Integer.parseInt(request.getParameter("eventId"));
 
-		log.info("Unregistering for the event :" + eventid);
+		LOGGER.info("Unregistering for the event :" + eventid);
 
 		visitorServiceImpl.unregisterEvent(visitor, eventid);
 
@@ -425,7 +424,7 @@ public class VisitorController {
 
 		eventServiceImpl.updateEventDeletions(eventid);
 
-		log.info("Seats allocated for the event are released :" + eventid);
+		LOGGER.info("Seats allocated for the event are released :" + eventid);
 
 		eventList = eventServiceImpl.getAllEvents();
 
